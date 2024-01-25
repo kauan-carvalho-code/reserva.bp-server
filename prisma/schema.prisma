@@ -11,9 +11,21 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
-  role     String
+  id                    String        @id @default(uuid())
+  name                  String
+  email                 String        @unique
+  password              String
+  role                  String
+  appointments_customer Appointment[] @relation("CustomerAppointments")
+  appointments_broker   Appointment[] @relation("BrokerAppointments")
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  starts_at   DateTime
+  ends_at     DateTime
+  customer    User     @relation("CustomerAppointments", fields: [customer_id], references: [id])
+  customer_id String
+  broker      User     @relation("BrokerAppointments", fields: [broker_id], references: [id])
+  broker_id   String
 }

@@ -7,6 +7,9 @@ import { HTTP_CODES } from '../../../shared/http-codes'
 
 import { ACCESS_TOKEN_KEY } from '../../../config/auth'
 
+import { SignInError } from '../services/errors/sign-in-error'
+import { CreateUserError } from '../../users/services/errors/create-user-error'
+
 export class AuthController {
   constructor (
     private readonly signInService: SignInService,
@@ -19,34 +22,33 @@ export class AuthController {
 
   async signIn (request: Request, response: Response): Promise<void> {
     try {
-      const tokenOrError = await this.signInService.execute(request.body)
+      const token = await this.signInService.execute(request.body)
 
-      if (tokenOrError instanceof Error) {
-        response.status(HTTP_CODES.UNAUTHORIZED).json({ error: tokenOrError.message })
-        return
-      }
-
-      response.cookie(ACCESS_TOKEN_KEY, tokenOrError, { httpOnly: true })
+      response.cookie(ACCESS_TOKEN_KEY, token, { httpOnly: true })
 
       response.status(HTTP_CODES.OK).json({ message: 'Login successful' })
     } catch (error) {
-      response.status(500).json({ error: 'Internal Server Error' })
+      if (error instanceof SignInError) {
+        response.status(HTTP_CODES.UNAUTHORIZED).json({ error: error.message })
+        return
+      }
+
+      response.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
 
   async signUp (request: Request, response: Response): Promise<void> {
     try {
-      const userOrError = await this.createUserService.execute(request.body)
+      const user = await this.createUserService.execute(request.body)
 
-      if (userOrError instanceof Error) {
-        response.status(HTTP_CODES.BAD_REQUEST).json({ error: userOrError.message })
+      response.status(HTTP_CODES.CREATED).json({ user })
+    } catch (error) {
+      if (error instanceof CreateUserError) {
+        response.status(HTTP_CODES.BAD_REQUEST).json({ error: error.message })
         return
       }
 
-      response.status(HTTP_CODES.CREATED).json({ user: userOrError })
-    } catch (error) {
-      console.log(error)
-      response.status(500).json({ error: 'Internal Server Error' })
+      response.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
 
@@ -55,7 +57,7 @@ export class AuthController {
       response.clearCookie(ACCESS_TOKEN_KEY)
       response.status(HTTP_CODES.OK).send({ message: 'Logout successful' })
     } catch (error) {
-      response.status(500).json({ error: 'Internal Server Error' })
+      response.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
 }

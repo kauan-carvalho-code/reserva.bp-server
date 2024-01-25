@@ -13,6 +13,9 @@
         "@typescript-eslint/no-unsafe-argument": "off",
         "@typescript-eslint/no-misused-promises": "off",
         "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/naming-convention": "off",
         "no-useless-constructor": "off",
         "no-template-curly-in-string": "off"
     },
