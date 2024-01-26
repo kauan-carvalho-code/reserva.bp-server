@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
-    "build": "tsup src",
+    "build": "tsc",
     "start": "node dist/server.js",
     "start:prod": "prisma migrate deploy && npm run start",
     "test": "vitest"
@@ -26,7 +26,6 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
-    "tsup": "^8.0.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.1"
