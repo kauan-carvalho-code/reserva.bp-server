@@ -26,7 +26,7 @@ export class AppointmentController {
         ...request.body
       })
 
-      response.status(HTTP_CODES.CREATED).json({ data: appointment })
+      response.status(HTTP_CODES.CREATED).json({ appointment })
     } catch (error) {
       if (error instanceof CreateAppointmentError) {
         return response.status(HTTP_CODES.BAD_REQUEST).json({ error: error.message })
@@ -44,7 +44,7 @@ export class AppointmentController {
         user_id: id
       })
 
-      response.status(HTTP_CODES.CREATED).json({ data: appointments })
+      response.status(HTTP_CODES.CREATED).json({ appointments })
     } catch (error) {
       console.log(error)
 

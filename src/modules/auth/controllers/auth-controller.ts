@@ -41,7 +41,7 @@ export class AuthController {
     try {
       const user = await this.createUserService.execute(request.body)
 
-      response.status(HTTP_CODES.CREATED).json({ data: user })
+      response.status(HTTP_CODES.CREATED).json({ user })
     } catch (error) {
       if (error instanceof CreateUserError) {
         response.status(HTTP_CODES.BAD_REQUEST).json({ error: error.message })
