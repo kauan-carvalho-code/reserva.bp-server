@@ -19,5 +19,5 @@
         "no-useless-constructor": "off",
         "no-template-curly-in-string": "off"
     },
-    "ignorePatterns": ["vite.config.ts"]
+    "ignorePatterns": ["vite.config.ts", "dist"]
 }

@@ -1,14 +1,40 @@
-version: '3'
+version: '3.8'
 
 services:
   postgres:
     image: postgres:latest
-    container_name: meu_postgres
+    container_name: postgres
+    restart: always
     environment:
       POSTGRES_DB: "reserva.bp"
       POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "123456"
+      POSTGRES_PASSWORD: "docker"
     ports:
       - "5432:5432"
     volumes:
-      - ./dados_postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - reserva.bp
+
+  reserva.bp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: reserva.bp
+    container_name: reserva.bp
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:docker@postgres:5432/reserva.bp?schema=public"
+    depends_on:
+      - postgres
+    networks:
+      - reserva.bp
+
+networks:
+  reserva.bp:
+    driver: bridge
+
+volumes:
+  postgres:
+    name: reserva.bp-db
