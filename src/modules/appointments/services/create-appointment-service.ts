@@ -9,8 +9,8 @@ import { CreateAppointmentError } from './errors/create-appointment-error'
 export const createAppointmentServiceInputSchema = yup.object().shape({
   customer_id: yup.string().required(),
   broker_id: yup.string().required(),
-  starts_at: yup.string().required(),
-  ends_at: yup.string().required()
+  starts_at: yup.date().required(),
+  ends_at: yup.date().required()
 })
 
 export type CreateAppointmentServiceInput = yup.InferType<typeof createAppointmentServiceInputSchema>

@@ -13,7 +13,28 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - reserva.bp
 
+  back-end:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: back-end
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:docker@postgres:5432/reserva.bp?schema=public"
+    depends_on:
+      - postgres
+    networks:
+      - reserva.bp
+    
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  reserva.bp:
+    driver: bridge
+
