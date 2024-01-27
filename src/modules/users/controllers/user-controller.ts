@@ -24,7 +24,7 @@ export class UserController {
     try {
       const user = await this.createUserService.execute(request.body)
 
-      response.status(HTTP_CODES.CREATED).json({ user })
+      response.status(HTTP_CODES.CREATED).json({ data: user })
     } catch (error) {
       if (error instanceof CreateUserError) {
         return response.status(HTTP_CODES.BAD_REQUEST).json({ error: error.message })
@@ -40,7 +40,7 @@ export class UserController {
 
       const user = await this.getUserService.execute({ id })
 
-      response.status(HTTP_CODES.OK).json({ user })
+      response.status(HTTP_CODES.OK).json({ data: user })
     } catch (error) {
       if (error instanceof GetUserError) {
         return response.status(HTTP_CODES.NOT_FOUND).json({ error: error.message })
@@ -54,7 +54,7 @@ export class UserController {
     try {
       const users = await this.getBrokersService.execute()
 
-      response.status(HTTP_CODES.OK).json({ users })
+      response.status(HTTP_CODES.OK).json({ data: users })
     } catch (error) {
       response.status(HTTP_CODES.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }

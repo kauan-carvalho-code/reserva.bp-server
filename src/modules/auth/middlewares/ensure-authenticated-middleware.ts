@@ -8,7 +8,6 @@ import { ACCESS_TOKEN_KEY } from '../../../config/auth'
 
 interface DecodedJwt {
   id: string
-  role: string
 }
 
 export class EnsureAuthenticatedMiddleware {
