@@ -9,8 +9,8 @@ import { CreateAppointmentError } from './errors/create-appointment-error'
 export const createAppointmentServiceInputSchema = yup.object().shape({
   customer_id: yup.string().required(),
   broker_id: yup.string().required(),
-  starts_at: yup.date().required(),
-  ends_at: yup.date().required()
+  starts_at: yup.string().required(),
+  ends_at: yup.string().required()
 })
 
 export type CreateAppointmentServiceInput = yup.InferType<typeof createAppointmentServiceInputSchema>
@@ -28,17 +28,17 @@ export class CreateAppointmentService {
       throw new CreateAppointmentError(`Error in field: ${error.path}`)
     }
 
-    if (input.starts_at <= new Date()) {
-      throw new CreateAppointmentError('Appointment start time cannot be in the past.')
-    }
-
-    if (input.ends_at <= input.starts_at) {
-      throw new CreateAppointmentError('Appointment end time must be after the start time.')
-    }
+    const parsedStartsAt = new Date(input.starts_at)
 
     const parsedEndsAt = new Date(input.ends_at)
 
-    const parsedStartsAt = new Date(input.starts_at)
+    if (parsedStartsAt <= new Date()) {
+      throw new CreateAppointmentError('Appointment start time cannot be in the past.')
+    }
+
+    if (parsedEndsAt <= parsedStartsAt) {
+      throw new CreateAppointmentError('Appointment end time must be after the start time.')
+    }
 
     const timeDifferenceInMilliseconds = parsedEndsAt.getTime() - parsedStartsAt.getTime()
 
@@ -66,8 +66,8 @@ export class CreateAppointmentService {
 
     const overlappingAppointment = await this.appointmentRepository.findOverlappingAppointment(
       input.broker_id,
-      input.starts_at,
-      input.ends_at
+      parsedStartsAt,
+      parsedEndsAt
     )
 
     if (overlappingAppointment) {
@@ -77,8 +77,8 @@ export class CreateAppointmentService {
     const appointment = await this.appointmentRepository.create({
       customer_id: input.customer_id,
       broker_id: input.broker_id,
-      starts_at: input.starts_at,
-      ends_at: input.ends_at
+      starts_at: parsedStartsAt,
+      ends_at: parsedEndsAt
     })
 
     return {
