@@ -2,17 +2,18 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:13
+    image: postgres:latest
     container_name: postgres
+    restart: always
     environment:
-      POSTGRES_DB: reserva.bp
+      POSTGRES_DB: reservabp
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: docker
     ports:
       - "5432:5432"
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  postgres:
-    name: reserva.bp-db
+  postgres_data:
+    driver: local

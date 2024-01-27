@@ -1,23 +1,28 @@
-FROM node:lts-alpine AS builder
-
+FROM node:lts-alpine AS devDependencies
 WORKDIR /app
+COPY package.json package-lock.* tsconfig.json ./
+COPY ./src ./src
+RUN npm install --dev
 
-COPY package*.json ./
-COPY prisma ./prisma/
+FROM node:lts-alpine AS dependencies
+WORKDIR /app
+COPY package.json package-lock.* ./
+COPY ./src ./src
+RUN npm install --production
 
-RUN npm install
-
+FROM node:lts-alpine AS build
+WORKDIR /app
+COPY --from=devDependencies /app/ .
 COPY . .
-
 RUN npm run build
 
-FROM node:lts-alpine
+FROM node:lts-alpine AS runtime
+USER node
+COPY --chown=node:node --from=dependencies /app/node_modules /home/node/app/node_modules/
+COPY --from=build --chown=node:node /app/dist /home/node/app/dist/
+COPY --from=build --chown=node:node /app/scripts /home/node/app/scripts/
+COPY --from=build --chown=node:node /app/prisma /home/node/app/prisma/
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+RUN chmod +x /home/node/app/scripts/server.sh
 
-EXPOSE 3000
-
-CMD [ "npm", "run", "start:prod" ]
+ENTRYPOINT ["/home/node/app/scripts/server.sh"]
